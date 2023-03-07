@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+
 import { Component } from '@angular/core';
 
 @Component({
@@ -10,32 +10,16 @@ export class HomeComponent {
   registerMode = false;
   users: any;
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
-  ngOnInit(){
-    this.getUsers()
-  }
+  ngOnInit() {}
 
   registerToggle() {
     this.registerMode = !this.registerMode;
   }
 
-  getUsers() {
-    this.http.get('https://localhost:5001/api/users').subscribe({
-      next: (res) => {
-        this.users = res;
-      },
-      error: (error) => {
-        console.error(error);
-      },
-      complete: () => {
-        console.log('request has completed');
-      },
-    });
-  }
-
   //sets registermode to false cause cancelRegister always passes false here
-  cancelRegisterMode(event: boolean){
-    this.registerMode = event
+  cancelRegisterMode(event: boolean) {
+    this.registerMode = event;
   }
 }
