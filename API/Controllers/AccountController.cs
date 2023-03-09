@@ -1,12 +1,13 @@
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace API.Controllers
 {
@@ -14,12 +15,18 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IUserRepository _userRepository;
 
         // /api/account
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(
+            DataContext context,
+            ITokenService tokenService,
+            IUserRepository userRepository
+        )
         {
+            _userRepository = userRepository;
             _context = context;
-            _tokenService= tokenService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")] //api/account/register
@@ -44,16 +51,14 @@ namespace API.Controllers
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
             };
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(
-                appUser => appUser.UserName == loginDto.Username
-            );
+            var user = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
 
             if (user == null)
                 return Unauthorized();
@@ -68,16 +73,20 @@ namespace API.Controllers
                     return Unauthorized("invalid Password");
             }
 
-             return new UserDto
+            return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain).Url
             };
         }
 
         private async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(appUser => appUser.UserName == username.ToLower());
+            var user = await _userRepository.GetUserByUsernameAsync(username.ToLower());
+            if(user == null)
+                return false;
+            return true;
         }
     }
 }

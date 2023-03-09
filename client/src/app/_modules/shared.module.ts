@@ -6,6 +6,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgxSpinner } from 'ngx-spinner/public_api';
+import { FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
   declarations: [],
@@ -20,6 +21,7 @@ import { NgxSpinner } from 'ngx-spinner/public_api';
     NgxSpinnerModule.forRoot({
       type: 'ball-scale-multiple',
     }),
+    FileUploadModule
   ],
   exports: [
     NgbModule,
@@ -27,6 +29,7 @@ import { NgxSpinner } from 'ngx-spinner/public_api';
     ToastrModule,
     NgxGalleryModule,
     NgxSpinnerModule,
+    FileUploadModule
   ],
 })
 export class SharedModule {}
