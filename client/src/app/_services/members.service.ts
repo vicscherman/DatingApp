@@ -40,8 +40,8 @@ export class MembersService {
     this.userParams = params;
   }
 
-  resetUserParams(){
-    if(this.user){
+  resetUserParams() {
+    if (this.user) {
       this.userParams = new UserParams(this.user);
       return this.userParams;
     }
@@ -117,6 +117,18 @@ export class MembersService {
         return paginatedResult;
       })
     );
+  }
+
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + `likes/${username}`, {});
+  }
+
+  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeaders(pageNumber, pageSize);
+
+    params = params.append('predicate', predicate);
+
+    return this.getPaginatedResults<Member[]>(this.baseUrl + 'likes', params);
   }
 
   private getPaginationHeaders(pageNumber: number, pageSize: number) {

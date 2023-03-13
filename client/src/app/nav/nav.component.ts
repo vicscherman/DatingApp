@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
 import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
+import { MembersService } from '../_services/members.service';
 
 @Component({
   selector: 'app-nav',
@@ -14,6 +15,7 @@ export class NavComponent {
   model: any = {};
 
 
+
   constructor(
     public accountService: AccountService,
     private router: Router,
@@ -21,6 +23,7 @@ export class NavComponent {
   ) {}
 
   ngOnInit() {
+
   }
 
   login() {

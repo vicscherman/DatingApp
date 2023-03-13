@@ -28,6 +28,7 @@ export class MemberListComponent {
 
   ngOnInit() {
     this.loadMembers();
+
   }
 
   loadMembers() {
