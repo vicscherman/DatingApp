@@ -25,9 +25,9 @@
         </div>
       </div>
       <div class="card-footer">
-        <div class="btn-group d-flex">
-          <button *ngIf='!memberLiked && memberLiked !== null'class="btn btn-primary" (click)="addLike(member)">Like</button>
-          <button  *ngIf='memberLiked && memberLiked !== null' class="btn btn-primary" (click)="removeLike(member)">Remove Like</button>
+        <div class="btn-group d-flex" *ngIf="memberLiked !==null">
+          <button *ngIf='memberLiked === false'class="btn btn-primary" (click)="addLike(member)">Like</button>
+          <button  *ngIf='memberLiked === true' class="btn btn-primary" (click)="removeLike(member)">Remove Like</button>
           <button class="btn btn-success" (click)="selectTab('Messages')">
             Messages
           </button>

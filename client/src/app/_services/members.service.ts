@@ -124,7 +124,12 @@ export class MembersService {
     );
   }
 
-  getUserLikesWithoutPagination(){
+  getUnpaginatedLikes(predicate: string){
+    let params = new HttpParams();
+    params = params.append('predicate', predicate)
 
+    return this.http.get<Member[]>(this.baseUrl + 'likes?'+ params)
   }
+
+
 }

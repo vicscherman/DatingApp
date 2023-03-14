@@ -30,7 +30,7 @@ export class MemberDetailComponent {
   // trying to conditionally check if user is liked already
   membersList: Member[] | undefined;
   pagination: Pagination | undefined;
-  memberLiked: any = null;
+  memberLiked: boolean | null = null;
 
   constructor(
     private memberService: MembersService,
@@ -61,17 +61,19 @@ export class MemberDetailComponent {
     ];
     this.galleryImages = this.getImages();
     this.memberService
-      .getLikes('liked', 1, 999)
+      .getUnpaginatedLikes('liked')
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          this.membersList = response.result;
+          this.membersList = response;
           if (this.membersList) {
             for (let member of this.membersList) {
               if (member.userName == this.member.userName) {
                 this.memberLiked = true;
+                return;
               }
             }
+            this.memberLiked = false;
           }
         },
       });
