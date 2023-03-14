@@ -108,6 +108,10 @@ export class MembersService {
     return this.http.post(this.baseUrl + `likes/${username}`, {});
   }
 
+  removeLike(username:string){
+    return this.http.delete(this.baseUrl + `likes/${username}`, {})
+  }
+
   getLikes(predicate: string, pageNumber: number, pageSize: number) {
     let params = getPaginationHeaders(pageNumber, pageSize);
 
@@ -118,5 +122,9 @@ export class MembersService {
       params,
       this.http
     );
+  }
+
+  getUserLikesWithoutPagination(){
+
   }
 }

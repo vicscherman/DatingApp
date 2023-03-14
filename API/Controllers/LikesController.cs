@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using API.DTOs;
 using API.Extensions;
 using API.Helpers;
@@ -48,6 +49,28 @@ namespace API.Controllers
             return BadRequest("Failed to like user");
         }
 
+        [HttpDelete("{username}")]
+        public async Task<ActionResult> RemoveLike(string username)
+        {
+            var sourceUserId = User.GetUserId();
+            var likedUser = await _userRepository.GetUserByUsernameAsync(username);
+            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+
+            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
+
+            if (userLike == null)
+            {
+                return BadRequest("You Don't like this user");
+            }
+
+            sourceUser.LikedUsers.Remove(userLike);
+
+            if(await _userRepository.SaveAllAsync())
+                return Ok();
+
+            return BadRequest("Failed to remove like");
+        }
+
         [HttpGet]
         public async Task<ActionResult<PagedList<LikeDto>>> GetUserLikes(
             [FromQuery] LikesParams likesParams
@@ -68,4 +91,7 @@ namespace API.Controllers
             return Ok(users);
         }
     }
+
+  
+
 }

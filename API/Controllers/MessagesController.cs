@@ -74,7 +74,6 @@ namespace API.Controllers
                     messages.TotalCount,
                     messages.TotalPages
                 )
-
             );
             return messages;
         }
@@ -85,8 +84,39 @@ namespace API.Controllers
             var currentUsername = User.GetUserName();
 
             return Ok(await _messageRepository.GetMessageThread(currentUsername, username));
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteMessage(int id)
+        {
+            var username = User.GetUserName();
 
+            var message = await _messageRepository.GetMessage(id);
+
+            if (message.SenderUsername != username && message.RecipientUserName != username)
+            {
+                return Unauthorized();
+            }
+
+            if (message.SenderUsername == username)
+            {
+                message.SenderDeleted = true;
+            }
+
+            if (message.RecipientUserName == username)
+            {
+                message.RecipientDeleted = true;
+            }
+
+            if (message.SenderDeleted && message.RecipientDeleted)
+            {
+                _messageRepository.DeleteMessage(message);
+            }
+
+            if (await _messageRepository.SaveAllAsync())
+                return Ok();
+
+            return BadRequest("Problem deleting message");
         }
     }
 }

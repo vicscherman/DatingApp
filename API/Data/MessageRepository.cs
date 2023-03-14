@@ -40,11 +40,22 @@ namespace API.Data
 
             query = messageParams.Container switch
             {
-                "Inbox" => query.Where(u => u.RecipientUserName == messageParams.Username),
-                "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username),
+                "Inbox"
+                    => query.Where(
+                        u =>
+                            u.RecipientUserName == messageParams.Username
+                            && u.RecipientDeleted == false
+                    ),
+                "Outbox"
+                    => query.Where(
+                        u => u.SenderUsername == messageParams.Username && u.SenderDeleted == false
+                    ),
                 _
                     => query.Where(
-                        u => u.RecipientUserName == messageParams.Username && u.DateRead == null
+                        u =>
+                            u.RecipientUserName == messageParams.Username
+                            && u.RecipientDeleted == false
+                            && u.DateRead == null
                     )
             };
 
@@ -70,11 +81,13 @@ namespace API.Data
                 .Where(
                     m =>
                         m.RecipientUserName == currentUsername
+                            && m.RecipientDeleted == false
                             && m.SenderUsername == recipientUsername
                         || m.RecipientUserName == recipientUsername
+                            && m.SenderDeleted == false
                             && m.SenderUsername == currentUsername
                 )
-                .OrderByDescending(m => m.MessageSent)
+                .OrderBy(m => m.MessageSent)
                 .ToListAsync();
 
             var unreadMessages = messages

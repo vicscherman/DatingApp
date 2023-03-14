@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   NgxGalleryOptions,
   NgxGalleryAnimation,
   NgxGalleryImage,
 } from '@kolkov/ngx-gallery';
+import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
+import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs';
 import { Member } from 'src/app/_models/member';
+import { Message } from 'src/app/_models/message';
+import { Pagination } from 'src/app/_models/pagination';
 import { MembersService } from 'src/app/_services/members.service';
+import { MessageService } from 'src/app/_services/message.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -14,18 +20,35 @@ import { MembersService } from 'src/app/_services/members.service';
   styleUrls: ['./member-detail.component.css'],
 })
 export class MemberDetailComponent {
-  member: Member | undefined;
+  @ViewChild('memberTabs', { static: true }) memberTabs?: TabsetComponent;
+  member: Member = {} as Member;
   galleryOptions: NgxGalleryOptions[] = [];
   galleryImages: NgxGalleryImage[] = [];
+  activeTab?: TabDirective;
+  messages: Message[] = [];
+
+  // trying to conditionally check if user is liked already
+  membersList: Member[] | undefined;
+  pagination: Pagination | undefined;
+  memberLiked: any = null;
 
   constructor(
     private memberService: MembersService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private messageService: MessageService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
-    this.loadMember();
+    this.route.data.subscribe({
+      next: (data) => (this.member = data['member']),
+    });
 
+    this.route.queryParams.subscribe({
+      next: (params) => {
+        params['tab'] && this.selectTab(params['tab']);
+      },
+    });
     this.galleryOptions = [
       {
         width: '500px',
@@ -36,6 +59,22 @@ export class MemberDetailComponent {
         preview: false,
       },
     ];
+    this.galleryImages = this.getImages();
+    this.memberService
+      .getLikes('liked', 1, 999)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          this.membersList = response.result;
+          if (this.membersList) {
+            for (let member of this.membersList) {
+              if (member.userName == this.member.userName) {
+                this.memberLiked = true;
+              }
+            }
+          }
+        },
+      });
   }
 
   getImages() {
@@ -52,15 +91,43 @@ export class MemberDetailComponent {
     return imageUrls;
   }
 
-  loadMember() {
-    const username = this.route.snapshot.paramMap.get('username');
-    if (username) {
-      this.memberService.getMember(username).subscribe({
-        next: (member) => {
-          this.member = member;
-          this.galleryImages = this.getImages();
-        },
+  selectTab(heading: string) {
+    if (this.memberTabs) {
+      this.memberTabs.tabs.find((x) => x.heading === heading)!.active = true;
+    }
+  }
+
+  loadMessages() {
+    if (this.member) {
+      this.messageService.getMessageThread(this.member.userName).subscribe({
+        next: (messages) => (this.messages = messages),
       });
     }
+  }
+
+  onTabActivated(data: TabDirective) {
+    this.activeTab = data;
+
+    if (this.activeTab.heading === 'Messages') {
+      this.loadMessages();
+    }
+  }
+
+  addLike(member: Member) {
+    this.memberService.addLike(member.userName).subscribe({
+      next: () => {
+        this.memberLiked = true;
+        this.toastr.success('You have liked ' + member.knownAs);
+      },
+    });
+  }
+
+  removeLike(member: Member) {
+    this.memberService.removeLike(member.userName).subscribe({
+      next: () => {
+        this.memberLiked = false;
+        this.toastr.info('You have unliked ' + member.knownAs);
+      },
+    });
   }
 }
