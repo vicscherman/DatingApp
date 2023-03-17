@@ -7,6 +7,14 @@
         class="card-img-top img-thumbnail"
       />
       <div class="card-body">
+        <div
+          class="mb-2"
+          *ngIf="
+            (presenceService.onlineUsers$ | async)?.includes(member.userName)
+          "
+        >
+          <i class="fa fa-user circle text-success"></i> Online Now
+        </div>
         <div>
           <strong>Location:</strong>
           <p>{{ member.city }}, {{ member.country }}</p>
@@ -17,7 +25,7 @@
         </div>
         <div>
           <strong>Last active:</strong>
-          <p>{{ member.lastActive + "z" | timeago }}</p>
+          <p>{{ member.lastActive  | timeago }}</p>
         </div>
         <div>
           <strong>Member since:</strong>
@@ -25,9 +33,21 @@
         </div>
       </div>
       <div class="card-footer">
-        <div class="btn-group d-flex" *ngIf="memberLiked !==null">
-          <button *ngIf='memberLiked === false'class="btn btn-primary" (click)="addLike(member)">Like</button>
-          <button  *ngIf='memberLiked === true' class="btn btn-primary" (click)="removeLike(member)">Remove Like</button>
+        <div class="btn-group d-flex" *ngIf="memberLiked !== null">
+          <button
+            *ngIf="memberLiked === false"
+            class="btn btn-primary"
+            (click)="addLike(member)"
+          >
+            Like
+          </button>
+          <button
+            *ngIf="memberLiked === true"
+            class="btn btn-primary"
+            (click)="removeLike(member)"
+          >
+            Remove Like
+          </button>
           <button class="btn btn-success" (click)="selectTab('Messages')">
             Messages
           </button>
@@ -58,10 +78,7 @@
         ></ngx-gallery>
       </tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
-        <app-member-messages
-          [messages]="messages"
-          [username]="member.userName"
-        ></app-member-messages>
+        <app-member-messages [username]="member.userName"></app-member-messages>
       </tab>
     </tabset>
   </div>
