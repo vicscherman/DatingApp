@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   NgxGalleryOptions,
   NgxGalleryAnimation,
@@ -42,13 +42,15 @@ export class MemberDetailComponent {
     private messageService: MessageService,
     private toastr: ToastrService,
     public presenceService: PresenceService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private router: Router
   ) {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: (user) => {
         if (user) this.user = user;
       },
     });
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit() {
@@ -91,7 +93,7 @@ export class MemberDetailComponent {
       });
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.messageService.stopHubConnection();
   }
 
