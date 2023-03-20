@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using API.Entities;
+using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Logging.Configuration;
 
 namespace API.Data
 {
@@ -31,6 +33,8 @@ namespace API.Data
         public DbSet<Message> Messages { get; set; }
 
         public DbSet<Group> Groups { get; set; }
+        
+        public DbSet<Photo> Photos {get; set;}
 
         public DbSet<Connection> Connections { get; set; }
 
@@ -82,6 +86,11 @@ namespace API.Data
                 .HasOne(u => u.Sender)
                 .WithMany(m => m.MessagesSent)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Entity<Photo>()
+                .HasQueryFilter(p => p.IsApproved);
+               
         }
     }
 }

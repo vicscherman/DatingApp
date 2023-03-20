@@ -17,14 +17,12 @@ namespace API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
-        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
         // /api/account
         public AccountController(
             UserManager<AppUser> userManager,
             ITokenService tokenService,
-            IUnitOfWork uow,
             IMapper mapper
         )
         {
@@ -32,7 +30,7 @@ namespace API.Controllers
             _mapper = mapper;
             _userManager = userManager;
             _tokenService = tokenService;
-            _uow = uow;
+     
         }
 
         [HttpPost("register")] //api/account/register
