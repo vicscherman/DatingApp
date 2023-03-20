@@ -14,22 +14,19 @@ import { MembersService } from '../_services/members.service';
 export class NavComponent {
   model: any = {};
 
-
-
   constructor(
     public accountService: AccountService,
     private router: Router,
     private toastr: ToastrService
   ) {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   login() {
     this.accountService.login(this.model).subscribe({
       next: () => {
         this.router.navigateByUrl('/members');
+        this.model = {};
       },
     });
   }

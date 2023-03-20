@@ -32,6 +32,7 @@ import { UserManagementComponent } from './admin/user-management/user-management
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { RolesModalComponent } from './modals/roles-modal/roles-modal.component';
 import { FormatRolesPipe } from './_pipes/format-roles.pipe';
+import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { FormatRolesPipe } from './_pipes/format-roles.pipe';
     UserManagementComponent,
     PhotoManagementComponent,
     RolesModalComponent,
-    FormatRolesPipe
+    FormatRolesPipe,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
